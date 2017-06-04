@@ -4,7 +4,7 @@ I'm new to Git, MMM, Javascript/Node, so this also a Sandbox for me.
 
 The module depends exclusively on the [TISSEO web API](https://data.toulouse-metropole.fr/explore/dataset/api-temps-reel-tisseo/) and [Tisseo/Toulouse Open Data](https://data.toulouse-metropole.fr/explore/dataset/tisseo-gtfs/).
 Documentation was found [here (Open Data link)](https://data.toulouse-metropole.fr/explore/dataset/api-temps-reel-tisseo/table/)
-You'll need to ask them for an API key to use this module. Mail link coming soon.
+You'll need to ask them for an API key to use this module here : opendata@tisseo.fr. There might be some restrictions if you overuse it.
 
 I'm thinking about makin the displays more minimalistic, but for now, I need to focus on Javascript/DOM syntax and mechanics.
 
