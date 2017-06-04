@@ -2,14 +2,15 @@
 Attempt to make a Magic Mirror Module for Toulouse transportation system.
 I'm new to Git, MMM, Javascript/Node, so this also a Sandbox for me.
 
-The module depends exclusively on the TISSEO web API.
+The module depends exclusively on the [TISSEO web API](https://data.toulouse-metropole.fr/explore/dataset/api-temps-reel-tisseo/) and [Tisseo/Toulouse Open Data](https://data.toulouse-metropole.fr/explore/dataset/tisseo-gtfs/).
+Documentation was found [here (Open Data link)](https://data.toulouse-metropole.fr/explore/dataset/api-temps-reel-tisseo/table/)
 You'll need to ask them for an API key to use this module. Mail link coming soon.
 
 I'm thinking about makin the displays more minimalistic, but for now, I need to focus on Javascript/DOM syntax and mechanics.
 
 ## WARNING: License and intellectual property statement
 
-Heavily inspired from https://github.com/da4throux/MMM-Paris-RATP-PG
+Heavily inspired from [da4throux's project](https://github.com/da4throux/MMM-Paris-RATP-PG)
 
 No license defined yet, this should probably inherit da4throux's project license.
 working on it for now.
