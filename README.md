@@ -17,7 +17,7 @@ working on it for now.
 However, due to the API being slightly different, many adaptation were made.
 
 # Screenshot
-![screenshot](https://github.com/Telomere31/MMM-Toulouse-Transports/blob/master/bus_schedules.png)
+![screenshot](./bus_schedules.png)
 
 # Install
 
@@ -39,10 +39,8 @@ However, due to the API being slightly different, many adaptation were made.
 	        module: 'MMM-Toulouse-Transports',
 	        position: 'top_right',
 	        header: 'Horaires de passage', // choose your own text
-	        config: {
-                        // see below
-	        }
-    	},
+	        config: see_below // see below
+    	}
 ```
 
 ## Configuration
