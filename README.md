@@ -45,8 +45,7 @@ However, due to the API being slightly different, many adaptation were made.
 
 ## Configuration
 Expected configuration is as follows:
-
-	```
+```
 	config: { // configuration specific to this module
 	apiKey         : 'YOUR API KEY HERE',
 	stopSchedules  : [
@@ -65,4 +64,4 @@ Expected configuration is as follows:
 	debug          : false, // if you have issues and want to help me fix them, yo should put this to true
 	updateInterval : 120000
 	}
-	```
+```
