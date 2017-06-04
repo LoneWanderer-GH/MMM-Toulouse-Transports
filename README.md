@@ -25,44 +25,44 @@ However, due to the API being slightly different, many adaptation were made.
 1. Clone repository into `../modules/` inside your MagicMirror folder.
 	go to
 	```
-		../modules/
+	../modules/
 	```
 	type
 	```
-		git clone https://github.com/Telomere31/MMM-Toulouse-Transports
+	git clone https://github.com/Telomere31/MMM-Toulouse-Transports
 	```
 
 2. Run `npm install` inside `../modules/MMM-Toulouse-Transports/` folder
-3. Add the module to the MagicMirror config
-```
+3. Add the module to the MagicMirror config. For the config field, see below
+	```
 	{
-	        module: 'MMM-Toulouse-Transports',
-	        position: 'top_right',
-	        header: 'Horaires de passage', // choose your own text
-	        config: see_below // see below
-    	}
-```
+		"module": "MMM-Toulouse-Transports",
+		"position": "top_right",
+		"header": "Horaires de passage",
+		"config": "see_below"
+	}
+	```
 
 ## Configuration
 Expected configuration is as follows:
 
-```
-            config: { // configuration specific to this module
-                apiKey         : 'YOUR API KEY HERE',
-                stopSchedules  : [
-                    {
-                        lineNumber: 1, // bus line number (the one displayed on bus stops, maps and buses ..)
-                        stopCode  : 1, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
-                        maxEntries: 3  // if you want the 3 next buses schedules
-                    },
-                    {
-                        //etc.
-                    },
-                    {
-                        //etc.
-                    }
-                ],
-                debug          : false, // if you have issues and want to help me fix them, yo should put this to true
-                updateInterval : 120000
-            }
-```
+	```
+	config: { // configuration specific to this module
+	apiKey         : 'YOUR API KEY HERE',
+	stopSchedules  : [
+	    {
+		lineNumber: 1, // bus line number (the one displayed on bus stops, maps and buses ..)
+		stopCode  : 1, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
+		maxEntries: 3  // if you want the 3 next buses schedules
+	    },
+	    {
+		//etc.
+	    },
+	    {
+		//etc.
+	    }
+	],
+	debug          : false, // if you have issues and want to help me fix them, yo should put this to true
+	updateInterval : 120000
+	}
+	```
