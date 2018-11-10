@@ -34,37 +34,40 @@ However, due to the API being slightly different, many adaptation were made.
 	cd ./MMM-Toulouse-Transports/ && npm install
 	```
 
-3. Add the module to the MagicMirror config. For the config field, see below
+You can do steps 1 and 2 in one single command:
+
 	```
-	{
-		"module": "MMM-Toulouse-Transports",
-		"position": "top_right",
-		"header": "Horaires de passage",
-		"config": "see_below"
-	}
+	cd ~/MagicMirror/modules/ && git clone https://github.com/LoneWanderer-GH/MMM-Toulouse-Transports && cd ~/MagicMirror/modules/MMM-Toulouse-Transports/ && npm install
 	```
 
+3. Add the module to the MagicMirror config. See following paragraph.
+
 ## Configuration
-Expected configuration is as follows:
+Add the MMM-Toulouse-Transports config parameters to the Magic Mirror config file.
+Example:
+
 ```
 {
-	"config": { // configuration specific to this module
-	"apiKey"         : 'YOUR API KEY HERE',
-	"stopSchedules"  : [
-	    {
-		"lineNumber": 1, // bus line number (the one displayed on bus stops, maps and buses ..)
-		"stopCode"  : 1, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
-		"maxEntries": 3  // if you want the 3 next buses schedules
-	    },
-	    {
-		//etc.
-	    },
-	    {
-		//etc.
-	    }
-	],
-	"debug"          : false, // if you have issues and want to help me fix them, yo should put this to true
-	"updateInterval" : 120000
-	}
+    "module": "MMM-Toulouse-Transports",
+    "position": "top_right",
+    "header": "Horaires de passage",
+    "config": {
+        "apiKey"         : "YOUR API KEY HERE",
+        "debug"          : false, // if you have issues and want to help me fix them, yo should put this to true
+        "updateInterval" : 60000,
+        "stopSchedules"  : [
+            {
+            "lineNumber": 1, // bus line number (the one displayed on bus stops, maps and buses ..). Can be a string or a number (e.g.: L1,L2 ... L8, 13,54 ...)
+            "stopCode"  : 1, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
+            "maxEntries": 3  // if you want the 3 next buses schedules
+            },
+            {
+            //etc.
+            },
+            {
+            //etc.
+            }
+        ],
+    }
 }
 ```
