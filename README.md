@@ -42,7 +42,8 @@ You can do steps 1 and 2 in one single command:
 	cd ~/MagicMirror/modules/ && git clone https://github.com/LoneWanderer-GH/MMM-Toulouse-Transports && cd ~/MagicMirror/modules/MMM-Toulouse-Transports/ && npm install
 	```
 
-3. Add the module to the MagicMirror config. See following paragraph.
+
+Now you can add the module to the MagicMirror config. See following paragraph.
 
 ## Configuration
 Add the MMM-Toulouse-Transports config parameters to the Magic Mirror config file.
