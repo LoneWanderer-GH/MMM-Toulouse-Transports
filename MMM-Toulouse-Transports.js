@@ -13,7 +13,7 @@
                         maxEntries:2    // shall be >1
                     },
                     {
-                        lineNumber: 22, // shall be >0
+                        lineNumber: 22, // shall be a bus line identifier (L1, 51, etc.)
                         stopCode: 431,  // shall be >0
                         maxEntries:2    // shall be >1
                     }
@@ -25,6 +25,7 @@
 */
 
 // var moment = require('moment');
+const unirest = require( 'unirest' );
 
 Module.register( "MMM-Toulouse-Transports", {
     defaults: {
@@ -41,7 +42,8 @@ Module.register( "MMM-Toulouse-Transports", {
         showLastUpdateTime: false, //display the time when the last pulled occured (taste & color...)
         oldUpdateOpacity: 0.5, //when a displayed time age has reached a threshold their display turns darker (i.e. less reliable)
         oldThreshold: 0.1, //if (1+x) of the updateInterval has passed since the last refresh... then the oldUpdateOpacity is applied
-        retryDelay: 1000,//10 * 1000, // delay before data update retrys (ms)
+        retryDelay: 5000,//10 * 1000, // delay before data update retrys (ms)
+        displayRefresh: 1000, // waiting time computation frequency
         debug: false
     },
 
@@ -55,21 +57,20 @@ Module.register( "MMM-Toulouse-Transports", {
         // for bus schedules
         // ask to get all lines defininitions from API
         // only one call should be necessary for now
-        Log.info("start - Send notification UPDATE_GLOBAL_TISSEO_DATA");
-        this.sendSocketNotification( 'UPDATE_GLOBAL_TISSEO_DATA', null);
-        
+        //Log.info("start - Send notification UPDATE_GLOBAL_TISSEO_DATA");
+        this.tisseodata = {
+            loadingfinished : false,
+            neededBusStops : [],
+            neededBusLines : []
+        };
+        this.updateAllTisseoData();
+        //this.sendSocketNotification( 'UPDATE_GLOBAL_TISSEO_DATA', null);
+
         this.busScheduleData = [];
-        this.currentUpdateInterval = this.config.updateInterval
+        this.currentUpdateInterval = this.config.updateInterval;
 
         this.lastUpdate = new Date();
-        
-        // test to avoid first request delayed of update interval
-        //this.log(TRACE, "start - lastUpdate " + this.lastUpdate);
-        //this.lastUpdate.setHours(this.lastUpdate.getHours() - 1)
-        //this.log(TRACE, "start - lastUpdate minus 01h00 " + this.lastUpdate);
-        //this.config.lastUpdate = this.lastUpdate
-        // end
-        
+
         this.loaded = false;
         this.updateTimer = null;
 
@@ -77,7 +78,7 @@ Module.register( "MMM-Toulouse-Transports", {
         var self = this;
         setInterval( function ( ) {
             self.updateDom( );
-        }, 1000 );
+        }, this.config.displayRefresh);
         Log.info("start - End fo start for module: " + this.name );
     },
 
@@ -85,19 +86,24 @@ Module.register( "MMM-Toulouse-Transports", {
     getHeader: function ( ) {
         //Log.info("Start getHeader");
         var header = this.data.header;
-        if ( this.config.showSecondsToNextUpdate ) {
-            //var timeDifference = Math.round( ( this.config.updateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
-            var timeDifference = Math.round( ( this.currentUpdateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
-            
-            if ( timeDifference > 0 ) {
-                header += ', next update in ' + timeDifference + 's';
-            } else {
-                header += ', update requested ' + Math.abs( timeDifference ) + 's ago';
+        if (this.tisseodata.loadingfinished === true) {
+            if ( this.config.showSecondsToNextUpdate ) {
+                //var timeDifference = Math.round( ( this.config.updateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
+                var timeDifference = Math.round( ( this.currentUpdateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
+
+                if ( timeDifference > 0 ) {
+                    header += ', next update in ' + timeDifference + 's';
+                } else {
+                    header += ', update requested ' + Math.abs( timeDifference ) + 's ago';
+                }
+            }
+            if ( this.config.showLastUpdateTime ) {
+                var now = this.config.lastUpdate;
+                header += ( now ? ( ' @ ' + now.getHours( ) + ':' + ( now.getMinutes( ) > 9 ? '' : '0' ) + now.getMinutes( ) + ':' + ( now.getSeconds( ) > 9 ? '' : '0' ) + now.getSeconds( ) ) : '' );
             }
         }
-        if ( this.config.showLastUpdateTime ) {
-            var now = this.config.lastUpdate;
-            header += ( now ? ( ' @ ' + now.getHours( ) + ':' + ( now.getMinutes( ) > 9 ? '' : '0' ) + now.getMinutes( ) + ':' + ( now.getSeconds( ) > 9 ? '' : '0' ) + now.getSeconds( ) ) : '' );
+        else {
+            header += "fetching necessary lines/stops data ..."
         }
 
         //Log.info("End getHeader (before return statement)");
@@ -109,8 +115,8 @@ Module.register( "MMM-Toulouse-Transports", {
         //Log.info("End getStyles (before return statement)");
         return ['font-awesome.css'];
     },
-    
-    
+
+
     getDom: function ( ) {
         Log.info("getDom - Start");
         var now = new Date(); // moment(); // moment package cannot be invoked in here ... only in nodehelper ?! not very handy
@@ -227,8 +233,8 @@ Module.register( "MMM-Toulouse-Transports", {
                 row.appendChild(timeLeftCell);
                 // put row
                 table.appendChild(row);
-            };// end loop over all schedule times
-        };// end loop over all buses numbers
+            }// end loop over all schedule times
+        }// end loop over all buses numbers
         //wrapper.appendChild( uList );
         //Log.info("End getDom (before return statement)");
         return wrapper;
@@ -262,7 +268,7 @@ Module.register( "MMM-Toulouse-Transports", {
             Log.info("computeWaitingTime - startDate > endDate  !!!");
 
             waitingTime += 1000 * 60 * 60 * 24;
-        };
+        }
         if (waitingTime > 60 * 60 * 1000) {
             // return time in hours
             waitingTime = "" + Math.ceil( ((waitingTime / 1000) / 60) / 60) + " h";
@@ -273,22 +279,22 @@ Module.register( "MMM-Toulouse-Transports", {
         }
         else {
             waitingTime = "" + Math.ceil( waitingTime / 1000) + " s";
-        };
+        }
 
         Log.info("computeWaitingTime - end - waitingTime="+waitingTime);
         return waitingTime;
     },
-    
+
     socketNotificationReceived: function ( notification, payload ) {
         Log.info("socketNotificationReceived - Module received notification: " + notification);
         switch ( notification ) {
-            case "JOURNEYS": 
+            case "JOURNEYS":
                 break;
             case "BUS_SCHEDULES":
                 this.busScheduleData = payload.data;
                 this.lastUpdate = payload.lastUpdate;
                 this.loaded = payload.loaded;
-                this.currentUpdateInterval = payload.currentUpdateInterval       
+                this.currentUpdateInterval = payload.currentUpdateInterval;
                 //Log.info("socketNotificationReceived - bus schedule data received is: " + this.busScheduleData);
                 //Log.info("socketNotificationReceived - bus schedule data received is: " + JSON.stringify(this.busScheduleData));
                 this.updateDom( );
@@ -303,6 +309,109 @@ Module.register( "MMM-Toulouse-Transports", {
                 this.sendSocketNotification("UPDATE_BUS_SCHEDULES");
         }
         Log.info("socketNotificationReceived - End of Module received notification: " + notification);
-    }
+    },
+
+
+
+
+    updateLineInfo: function(index) {
+        Log.log("updateLineInfo - start");
+        var self = this;
+        var nextIndex = index + 1;
+        var apiKey = self.config.apiKey;
+        if ( index <= self.config.stopSchedules.length - 1) {
+            var lineShortName = self.config.stopSchedules[index].lineNumber;
+            Log.log("updateLineInfo - iteration:" + index +" get Line data for: " + lineShortName);
+
+            var urlGetLineId = 'https://api.tisseo.fr/v1/lines.json?network=Tiss%C3%A9o&shortName='+ lineShortName +'&key=' + apiKey;
+
+            unirest.get( urlGetLineId )
+                .headers( { 'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8' } )
+                .end( function ( response ) {
+                    //Log.log("updateLineInfo - response"+ JSON.stringify(response));
+                    if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
+                        Log.log("updateLineInfo - REQUEST_END - the received Tisseo Lines: " + JSON.stringify(response.body));
+                        if(Object.keys(response.body.lines.line).length > 0) {
+                            Log.log("updateLineInfo - REQUEST_END - found the lineId=" + response.body.lines.line[0].id + " for lineNumber=" + lineShortName);
+                            self.neededTisseoLines.push( {
+                                lineNumber: lineShortName,
+                                lineId: response.body.lines.line[0].id,
+                                lineData: response.body
+                            });
+                            self.updateStopInfo(self.config.stopSchedules[index].stopCode, response.body.lines.line[0].id);
+                        }
+                        else {
+                            self.log(ERROR, "updateLineInfo - REQUEST_END - Nothing found for lineNumber=" + lineShortName);
+
+                        }
+                        // do callback recursion ...
+                        self.updateLineInfo(nextIndex);
+
+                    } else {
+                        if ( response ) {
+                            Log.log('updateLineInfo - REQUEST_END - *** partial response received - HTTP return code ='+response.statusCode);
+                            Log.log('updateLineInfo - REQUEST_END - ' + JSON.stringify(response));
+                        } else {
+                            Log.log('updateLineInfo - REQUEST_END - *** no response received' );
+                        }
+                    }
+                } );
+        }
+        this.tisseodata.loadingfinished = true;
+        Log.log("updateLineInfo - end");
+    },
+
+    updateStopInfo: function (stopCode, lineId) {
+        Log.log("updateStopInfo - start - stopCode="+stopCode+" - lineId="+lineId);
+        var self = this;
+        var apiKey = self.config.apiKey;
+        var urlAllStop = 'https://api.tisseo.fr/v1/stop_points.json?lineId=' + lineId +'&key=' + apiKey;
+        unirest.get( urlAllStop )
+            .headers( {'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8'} )
+            .end( function ( response ) {
+                if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
+                    //Log.log("updateStopInfo - the received Tisseo stops: " + JSON.stringify(response.body));
+                    for(var j = 0; j <= response.body.physicalStops.physicalStop.length - 1; j++) {
+                        //Log.log("updateStopInfo - "+ JSON.stringify(response.body.physicalStops.physicalStop[j]));
+                        var currentStopInfo = response.body.physicalStops.physicalStop[j];
+                        var currentCode = currentStopInfo.operatorCodes[0].operatorCode.value;
+                        if(currentCode == stopCode.toString() ) {
+                            var stopId = currentStopInfo.id;
+                            Log.log("updateStopInfo - REQUEST_END - found the stopId " + stopId + " for stopCode " + stopCode);
+                            self.neededTisseoStops.push( {
+                                stopCode: stopCode,
+                                stopId: stopId
+                            });
+                            break;
+                        }
+                    }
+                } else {
+                        if ( response ) {
+                            Log.log('updateStopInfo - REQUEST_END - *** partial response received - HTTP return code ='+response.statusCode);
+                            Log.log('updateStopInfo - REQUEST_END - ' + JSON.stringify(response));
+                        } else {
+                            Log.log('updateStopInfo - REQUEST_END - *** no response received' );
+                        }
+                }
+            } );
+        Log.log("updateStopInfo - stop");
+    },
+
+    /**
+     * Stores the full Tisseo Lines configuration
+     */
+    updateAllTisseoData : function( ) {
+        Log.log("updateAllTisseoData - start");
+        var self = this;
+        // reset local tables
+        this.tisseodata.neededBusStops = [];
+        this.tisseodata.neededBusLines = [];
+        // get all necessary lines Data
+        Log.log("updateAllTisseoData - itreations to do: "+ self.config.stopSchedules.length);
+        // start lineId and stopID search chain
+        self.updateLineInfo(0);
+        Log.log("updateAllTisseoData - end");
+    },
+
 } );
 

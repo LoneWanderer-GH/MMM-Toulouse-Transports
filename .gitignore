@@ -3,3 +3,7 @@ sublime.sublime-workspace
 exemple2_json.json
 exemple_json.json
 node_modules
+*.sublime-project
+sublime.sublime-project
+MMM-Toulouse-Transports.sublime-workspace
+sublime.sublime-project
