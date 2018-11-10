@@ -22,7 +22,9 @@ However, due to the API being slightly different, many adaptation were made.
 
 # Install
 
-0. Make sure you have MagicMirror installed. Go into the MagicMirror Folder.
+First, make sure you have MagicMirror installed. Go into the MagicMirror Folder.
+
+
 1. Clone repository into `../modules/` inside your MagicMirror folder.
 	```
 	cd ./modules/
