@@ -333,7 +333,7 @@ Module.register( "MMM-Toulouse-Transports", {
                         Log.log("updateLineInfo - REQUEST_END - the received Tisseo Lines: " + JSON.stringify(response.body));
                         if(Object.keys(response.body.lines.line).length > 0) {
                             Log.log("updateLineInfo - REQUEST_END - found the lineId=" + response.body.lines.line[0].id + " for lineNumber=" + lineShortName);
-                            self.neededTisseoLines.push( {
+                            self.tisseodata.neededBusLines.push( {
                                 lineNumber: lineShortName,
                                 lineId: response.body.lines.line[0].id,
                                 lineData: response.body
@@ -357,7 +357,11 @@ Module.register( "MMM-Toulouse-Transports", {
                     }
                 } );
         }
-        this.tisseodata.loadingfinished = true;
+        else {
+            LLog.log("updateLineInfo - iterations finished. set loadingfinished to true");
+            this.tisseodata.loadingfinished = true;
+            this.sendSocketNotification( 'UPDATE_BUS_SCHEDULES', this.tisseodata );
+        }
         Log.log("updateLineInfo - end");
     },
 
@@ -378,7 +382,7 @@ Module.register( "MMM-Toulouse-Transports", {
                         if(currentCode == stopCode.toString() ) {
                             var stopId = currentStopInfo.id;
                             Log.log("updateStopInfo - REQUEST_END - found the stopId " + stopId + " for stopCode " + stopCode);
-                            self.neededTisseoStops.push( {
+                            self.tisseodata.neededBusStops.push( {
                                 stopCode: stopCode,
                                 stopId: stopId
                             });

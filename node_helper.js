@@ -124,6 +124,8 @@ module.exports = NodeHelper.create( {
             this.scheduleBusScheduleUpdate(this.config.initialLoadDelay);
         }
         if (notification === 'UPDATE_BUS_SCHEDULES' && this.started === true) {
+            this.neededTisseoStops = payload.neededBusStops;
+            this.neededTisseoLines = payload.neededBusLines;
             this.log(TRACE, ' *** call Update Bus Schedules' );
             this.scheduleBusScheduleUpdate(this.config.initialLoadDelay);
         }
@@ -294,8 +296,7 @@ module.exports = NodeHelper.create( {
 
     isTisseoDataFullyLoaded :  function() {
         return (
-        (this.uniqueStops.length == this.neededTisseoStops.length)
-        &&
+        (this.uniqueStops.length == this.neededTisseoStops.length) &&
         (this.uniqueLines.length == this.neededTisseoLines.length)
         );
     },
