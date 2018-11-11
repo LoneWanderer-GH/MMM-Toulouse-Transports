@@ -25,7 +25,6 @@
 */
 
 // var moment = require('moment');
-const unirest = require( 'unirest' );
 
 Module.register( "MMM-Toulouse-Transports", {
     defaults: {
