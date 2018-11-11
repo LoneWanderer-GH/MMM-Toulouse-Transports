@@ -116,9 +116,8 @@ module.exports = NodeHelper.create( {
             this.updateAllTisseoData();
             this.started = true;
 
-            // test for display at startup
-            this.updateBusScheduleTimetable(0);
-            // test for immediate display
+            //this.updateBusScheduleTimetable(0);
+            this.sendSocketNotification( "ALL_LINES_AVAILABLE", { lastUpdate: new Date( ) } );
 
             this.log(TRACE, "socketNotificationReceived - schedule update of bus data (call scheduleBusScheduleUpdate())");
             this.scheduleBusScheduleUpdate(this.config.initialLoadDelay);
@@ -170,9 +169,12 @@ module.exports = NodeHelper.create( {
                             self.log(DEBUG, 'updateLineInfo - REQUEST_END - ' + JSON.stringify(response));
                         } else {
                             self.log(DEBUG, 'updateLineInfo - REQUEST_END - *** no response received' );
-                        };
-                    };
+                        }
+                    }
                 } );
+        }
+        else {
+
         }
         this.log(TRACE, "updateLineInfo - end");
     },

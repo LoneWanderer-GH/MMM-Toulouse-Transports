@@ -57,14 +57,8 @@ Module.register( "MMM-Toulouse-Transports", {
         // for bus schedules
         // ask to get all lines defininitions from API
         // only one call should be necessary for now
-        //Log.info("start - Send notification UPDATE_GLOBAL_TISSEO_DATA");
-        this.tisseodata = {
-            loadingfinished : false,
-            neededBusStops : [],
-            neededBusLines : []
-        };
-        this.updateAllTisseoData();
-        //this.sendSocketNotification( 'UPDATE_GLOBAL_TISSEO_DATA', null);
+        Log.info("start - Send notification UPDATE_GLOBAL_TISSEO_DATA");
+        this.sendSocketNotification( 'UPDATE_GLOBAL_TISSEO_DATA', null);
 
         this.busScheduleData = [];
         this.currentUpdateInterval = this.config.updateInterval;
@@ -75,10 +69,10 @@ Module.register( "MMM-Toulouse-Transports", {
         this.updateTimer = null;
 
 
-        var self = this;
+/*        var self = this;
         setInterval( function ( ) {
             self.updateDom( );
-        }, this.config.displayRefresh);
+        }, this.config.displayRefresh);*/
         Log.info("start - End fo start for module: " + this.name );
     },
 
@@ -306,116 +300,16 @@ Module.register( "MMM-Toulouse-Transports", {
                 this.updateDom( );
                 break;
             case "ALL_LINES_AVAILABLE":
+                var self = this;
+                setInterval(
+                    function ( ) {
+                        self.updateDom( );
+                    },
+                    this.config.displayRefresh);
                 this.sendSocketNotification("UPDATE_BUS_SCHEDULES");
         }
         Log.info("socketNotificationReceived - End of Module received notification: " + notification);
-    },
-
-
-
-
-    updateLineInfo: function(index) {
-        Log.log("updateLineInfo - start");
-        var self = this;
-        var nextIndex = index + 1;
-        var apiKey = self.config.apiKey;
-        if ( index <= self.config.stopSchedules.length - 1) {
-            var lineShortName = self.config.stopSchedules[index].lineNumber;
-            Log.log("updateLineInfo - iteration:" + index +" get Line data for: " + lineShortName);
-
-            var urlGetLineId = 'https://api.tisseo.fr/v1/lines.json?network=Tiss%C3%A9o&shortName='+ lineShortName +'&key=' + apiKey;
-
-            unirest.get( urlGetLineId )
-                .headers( { 'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8' } )
-                .end( function ( response ) {
-                    //Log.log("updateLineInfo - response"+ JSON.stringify(response));
-                    if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
-                        Log.log("updateLineInfo - REQUEST_END - the received Tisseo Lines: " + JSON.stringify(response.body));
-                        if(Object.keys(response.body.lines.line).length > 0) {
-                            Log.log("updateLineInfo - REQUEST_END - found the lineId=" + response.body.lines.line[0].id + " for lineNumber=" + lineShortName);
-                            self.tisseodata.neededBusLines.push( {
-                                lineNumber: lineShortName,
-                                lineId: response.body.lines.line[0].id,
-                                lineData: response.body
-                            });
-                            self.updateStopInfo(self.config.stopSchedules[index].stopCode, response.body.lines.line[0].id);
-                        }
-                        else {
-                            self.log(ERROR, "updateLineInfo - REQUEST_END - Nothing found for lineNumber=" + lineShortName);
-
-                        }
-                        // do callback recursion ...
-                        self.updateLineInfo(nextIndex);
-
-                    } else {
-                        if ( response ) {
-                            Log.log('updateLineInfo - REQUEST_END - *** partial response received - HTTP return code ='+response.statusCode);
-                            Log.log('updateLineInfo - REQUEST_END - ' + JSON.stringify(response));
-                        } else {
-                            Log.log('updateLineInfo - REQUEST_END - *** no response received' );
-                        }
-                    }
-                } );
-        }
-        else {
-            LLog.log("updateLineInfo - iterations finished. set loadingfinished to true");
-            this.tisseodata.loadingfinished = true;
-            this.sendSocketNotification( 'UPDATE_BUS_SCHEDULES', this.tisseodata );
-        }
-        Log.log("updateLineInfo - end");
-    },
-
-    updateStopInfo: function (stopCode, lineId) {
-        Log.log("updateStopInfo - start - stopCode="+stopCode+" - lineId="+lineId);
-        var self = this;
-        var apiKey = self.config.apiKey;
-        var urlAllStop = 'https://api.tisseo.fr/v1/stop_points.json?lineId=' + lineId +'&key=' + apiKey;
-        unirest.get( urlAllStop )
-            .headers( {'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8'} )
-            .end( function ( response ) {
-                if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
-                    //Log.log("updateStopInfo - the received Tisseo stops: " + JSON.stringify(response.body));
-                    for(var j = 0; j <= response.body.physicalStops.physicalStop.length - 1; j++) {
-                        //Log.log("updateStopInfo - "+ JSON.stringify(response.body.physicalStops.physicalStop[j]));
-                        var currentStopInfo = response.body.physicalStops.physicalStop[j];
-                        var currentCode = currentStopInfo.operatorCodes[0].operatorCode.value;
-                        if(currentCode == stopCode.toString() ) {
-                            var stopId = currentStopInfo.id;
-                            Log.log("updateStopInfo - REQUEST_END - found the stopId " + stopId + " for stopCode " + stopCode);
-                            self.tisseodata.neededBusStops.push( {
-                                stopCode: stopCode,
-                                stopId: stopId
-                            });
-                            break;
-                        }
-                    }
-                } else {
-                        if ( response ) {
-                            Log.log('updateStopInfo - REQUEST_END - *** partial response received - HTTP return code ='+response.statusCode);
-                            Log.log('updateStopInfo - REQUEST_END - ' + JSON.stringify(response));
-                        } else {
-                            Log.log('updateStopInfo - REQUEST_END - *** no response received' );
-                        }
-                }
-            } );
-        Log.log("updateStopInfo - stop");
-    },
-
-    /**
-     * Stores the full Tisseo Lines configuration
-     */
-    updateAllTisseoData : function( ) {
-        Log.log("updateAllTisseoData - start");
-        var self = this;
-        // reset local tables
-        this.tisseodata.neededBusStops = [];
-        this.tisseodata.neededBusLines = [];
-        // get all necessary lines Data
-        Log.log("updateAllTisseoData - itreations to do: "+ self.config.stopSchedules.length);
-        // start lineId and stopID search chain
-        self.updateLineInfo(0);
-        Log.log("updateAllTisseoData - end");
-    },
+    }
 
 } );
 
