@@ -144,7 +144,7 @@ module.exports = NodeHelper.create( {
             unirest.get( urlGetLineId )
                 .headers( { 'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8' } )
                 .end( function ( response ) {
-                    //self.log(DEBUG, "updateLineInfo - response"+ JSON.stringify(response));
+                    self.log(DEBUG, "updateLineInfo - response"+ JSON.stringify(response));
                     if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
                         self.log(DEBUG, "updateLineInfo - REQUEST_END - the received Tisseo Lines: " + JSON.stringify(response.body));
                         if(Object.keys(response.body.lines.line).length > 0) {
@@ -188,7 +188,7 @@ module.exports = NodeHelper.create( {
             .headers( {'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8'} )
             .end( function ( response ) {
                 if ( response && response.statusCode >= 200 && response.statusCode < 300 && response.body ) {
-                    //self.log(DEBUG, "updateStopInfo - the received Tisseo stops: " + JSON.stringify(response.body));
+                    self.log(DEBUG, "updateStopInfo - the received Tisseo stops: " + JSON.stringify(response.body));
                     for(var j = 0; j <= response.body.physicalStops.physicalStop.length - 1; j++) {
                         //self.log(DEBUG, "updateStopInfo - "+ JSON.stringify(response.body.physicalStops.physicalStop[j]));
                         var currentStopInfo = response.body.physicalStops.physicalStop[j];
