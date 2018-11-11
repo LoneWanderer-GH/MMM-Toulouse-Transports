@@ -69,10 +69,12 @@ Module.register( "MMM-Toulouse-Transports", {
         this.updateTimer = null;
 
 
-/*        var self = this;
-        setInterval( function ( ) {
-            self.updateDom( );
-        }, this.config.displayRefresh);*/
+        var self = this;
+        setInterval(
+            function ( ) {
+                self.updateDom( );
+            },
+            this.config.displayRefresh);
         Log.info("start - End fo start for module: " + this.name );
     },
 
@@ -300,12 +302,12 @@ Module.register( "MMM-Toulouse-Transports", {
                 this.updateDom( );
                 break;
             case "ALL_LINES_AVAILABLE":
-                var self = this;
+/*                var self = this;
                 setInterval(
                     function ( ) {
                         self.updateDom( );
                     },
-                    this.config.displayRefresh);
+                    this.config.displayRefresh);*/
                 this.sendSocketNotification("UPDATE_BUS_SCHEDULES");
         }
         Log.info("socketNotificationReceived - End of Module received notification: " + notification);
