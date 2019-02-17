@@ -163,20 +163,17 @@ Module.register( "MMM-Toulouse-Transports", {
             var currentDataToDisplay = this.busScheduleData[ scheduleDataIndex ];
             var lineNumber = currentDataToDisplay.lineShortName;
             var data = currentDataToDisplay.scheduleData;
+            rgbString = data.departure[0].line.color; //.replace("(", "").replace(")","");
+            var lineColor = 'rgb'+rgbString
+			
             var stopName = data.stop.name;
             var stopCode = data.stop.operatorCode;
 
-            // put icon
-            var span = document.createElement("span");
-            var icon = document.createElement("i");
-            icon.classList.add("fa-fw");
-            icon.classList.add("fa-li", "fa", "fa-bus");
-            icon.classList.add("bright");
-            span.appendChild(icon);
-            lineIdCell.appendChild(span);
-
+            
             // put line N°
-            lineIdCell.innerHTML = lineNumber;
+            lineIdCell.innerHTML += '<i class="fa fa-bus bright" style="color:'+lineColor+'"></i>' // put icon
+            lineIdCell.innerHTML += lineNumber;
+            lineIdCell.style.color = lineColor
             row.appendChild(lineIdCell);
 
             // put empty dest cell
@@ -185,6 +182,7 @@ Module.register( "MMM-Toulouse-Transports", {
 
             // put stopname cell
             stopNameCell.innerHTML = stopName + " ("+stopCode+")";
+            stopNameCell.style.color = lineColor
             row.appendChild(stopNameCell);
 
             // create section row
