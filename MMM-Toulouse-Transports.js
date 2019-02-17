@@ -163,7 +163,7 @@ Module.register( "MMM-Toulouse-Transports", {
             var currentDataToDisplay = this.busScheduleData[ scheduleDataIndex ];
             var lineNumber = currentDataToDisplay.lineShortName;
             var data = currentDataToDisplay.scheduleData;
-            rgbString = data.departure[0].line.color; //.replace("(", "").replace(")","");
+            rgbString = data.departure[0].line.color;
             var lineColor = 'rgb'+rgbString
 			
             var stopName = data.stop.name;
