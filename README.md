@@ -48,29 +48,37 @@ Now you can add the module to the MagicMirror config. See following paragraph.
 ## Configuration
 Add the MMM-Toulouse-Transports config parameters to the Magic Mirror config file.
 Example:
-
 ```
 {
-    "module": "MMM-Toulouse-Transports",
-    "position": "top_right",
-    "header": "Horaires de passage",
-    "config": {
-        "apiKey"         : "YOUR API KEY HERE",
-        "debug"          : false, // if you have issues and want to help me fix them, yo should put this to true
-        "updateInterval" : 60000,
-        "stopSchedules"  : [
-            {
-            "lineNumber": 1, // bus line number (the one displayed on bus stops, maps and buses ..). Can be a string or a number (e.g.: L1,L2 ... L8, 13,54 ...)
-            "stopCode"  : 1, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
-            "maxEntries": 3  // if you want the 3 next buses schedules
-            },
-            {
-            //etc.
-            },
-            {
-            //etc.
-            }
-        ],
+    module: "MMM-Toulouse-Transports",
+    position: "top_right",
+    header: "Horaires de passage",
+    config:
+    {
+        apiKey: "YOUR API KEY HERE",
+	debug: true,             // if you have issues and want to help me fix them, yo should put this to true
+        updateInterval: 60000,   // refresh frequency in ms
+        stopSchedules: [
+        {
+            lineNumber: 19, // bus line number (the one displayed on bus stops, maps and buses ..). Can be a string or a number (e.g.: L1,L2 ... L8, 13,54 ...)
+            stopCode: 1991, // this is an exact stop code of Tisseo. You can find it on your favorite bus stop sign. or Get it on Tisseo travels webapp
+            maxEntries: 2   // if you want the 2 next buses schedules
+        },
+        {
+            lineNumber: "L8",
+            stopCode: 6601,
+            maxEntries: 2
+        },
+        {
+            lineNumber: 23,
+            stopCode: 431,
+            maxEntries: 2
+        },
+        {
+            lineNumber: 14,
+            stopCode: 2010,
+            maxEntries: 2
+        }]
     }
 }
 ```
