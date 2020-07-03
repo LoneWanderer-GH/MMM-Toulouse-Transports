@@ -24,8 +24,6 @@
         }
 */
 
-// var moment = require('moment');
-
 Module.register( "MMM-Toulouse-Transports", {
     defaults: {
         maxTimeOffset: 200, // Max time in the future for entries
@@ -57,19 +55,19 @@ Module.register( "MMM-Toulouse-Transports", {
         // only one call should be necessary for now
         Log.info("start - Send notification UPDATE_GLOBAL_TISSEO_DATA");
         this.sendSocketNotification( 'UPDATE_GLOBAL_TISSEO_DATA', null);
-        
+
         this.busScheduleData = [];
         this.currentUpdateInterval = this.config.updateInterval
 
         this.lastUpdate = new Date();
-        
+
         // test to avoid first request delayed of update interval
         //this.log(TRACE, "start - lastUpdate " + this.lastUpdate);
         //this.lastUpdate.setHours(this.lastUpdate.getHours() - 1)
         //this.log(TRACE, "start - lastUpdate minus 01h00 " + this.lastUpdate);
         //this.config.lastUpdate = this.lastUpdate
         // end
-        
+
         this.loaded = false;
         this.updateTimer = null;
 
@@ -88,7 +86,7 @@ Module.register( "MMM-Toulouse-Transports", {
         if ( this.config.showSecondsToNextUpdate ) {
             //var timeDifference = Math.round( ( this.config.updateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
             var timeDifference = Math.round( ( this.currentUpdateInterval - new Date( ) + Date.parse( this.config.lastUpdate ) ) / 1000 );
-            
+
             if ( timeDifference > 0 ) {
                 header += ', next update in ' + timeDifference + 's';
             } else {
@@ -109,8 +107,8 @@ Module.register( "MMM-Toulouse-Transports", {
         //Log.info("End getStyles (before return statement)");
         return ['font-awesome.css'];
     },
-    
-    
+
+
     getDom: function ( ) {
         Log.info("getDom - Start");
         var now = new Date(); // moment(); // moment package cannot be invoked in here ... only in nodehelper ?! not very handy
@@ -165,11 +163,11 @@ Module.register( "MMM-Toulouse-Transports", {
             var data = currentDataToDisplay.scheduleData;
             rgbString = data.departure[0].line.color;
             var lineColor = 'rgb'+rgbString
-			
+
             var stopName = data.stop.name;
             var stopCode = data.stop.operatorCode;
 
-            
+
             // put line N°
             lineIdCell.innerHTML += '<i class="fa fa-bus bright" style="color:'+lineColor+'"></i>' // put icon
             lineIdCell.innerHTML += lineNumber;
@@ -276,17 +274,17 @@ Module.register( "MMM-Toulouse-Transports", {
         Log.info("computeWaitingTime - end - waitingTime="+waitingTime);
         return waitingTime;
     },
-    
+
     socketNotificationReceived: function ( notification, payload ) {
         Log.info("socketNotificationReceived - Module received notification: " + notification);
         switch ( notification ) {
-            case "JOURNEYS": 
+            case "JOURNEYS":
                 break;
             case "BUS_SCHEDULES":
                 this.busScheduleData = payload.data;
                 this.lastUpdate = payload.lastUpdate;
                 this.loaded = payload.loaded;
-                this.currentUpdateInterval = payload.currentUpdateInterval       
+                this.currentUpdateInterval = payload.currentUpdateInterval
                 //Log.info("socketNotificationReceived - bus schedule data received is: " + this.busScheduleData);
                 //Log.info("socketNotificationReceived - bus schedule data received is: " + JSON.stringify(this.busScheduleData));
                 this.updateDom( );
