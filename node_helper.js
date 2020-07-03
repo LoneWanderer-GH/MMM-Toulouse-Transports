@@ -13,13 +13,6 @@
 const NodeHelper = require( "node_helper" );
 const unirest = require( 'unirest' );
 
-var moment = require('moment');
-
-//const synchronize = require('synchronize');
-//const fiber = sync.fiber;
-//const await = sync.await;
-//const defer = sync.defer;
-
 
 // for logger
 const WARNING = "WARNING";
@@ -55,13 +48,13 @@ module.exports = NodeHelper.create( {
         // full list of required bus schedule data
         this.busScheduleData = {};
         this.busScheduleData.lastUpdate = new Date( );
-        
+
 		// test to avoid first request delayed of update interval
 		this.log(TRACE, "start - busScheduleData.lastUpdate " + this.busScheduleData.lastUpdate);
 		this.busScheduleData.lastUpdate.setHours(this.busScheduleData.lastUpdate.getHours() - 1)
 		this.log(TRACE, "start - busScheduleData.lastUpdate minus 01h00 " + this.busScheduleData.lastUpdate);
 		//end
-        
+
         this.busScheduleData.loaded = false;
         this.busScheduleData.data = [];
 
@@ -115,11 +108,11 @@ module.exports = NodeHelper.create( {
             this.log(TRACE, ' *** call Update Lines list');
             this.updateAllTisseoData();
             this.started = true;
-            
+
             // test for display at startup
             this.updateBusScheduleTimetable(0);
             // test for immediate display
-            
+
 			this.log(TRACE, "socketNotificationReceived - schedule update of bus data (call scheduleBusScheduleUpdate())");
             this.scheduleBusScheduleUpdate(this.config.initialLoadDelay);
         };
@@ -157,7 +150,7 @@ module.exports = NodeHelper.create( {
 						}
 						else {
 							self.log(ERROR, "updateLineInfo - REQUEST_END - Nothing found for lineNumber=" + lineShortName);
-							
+
 						}
 						// do callback recursion ...
 						self.updateLineInfo(nextIndex);
@@ -226,7 +219,7 @@ module.exports = NodeHelper.create( {
         self.updateLineInfo(0);
         this.log(TRACE, "updateAllTisseoData - end");
     },
-    
+
     /* scheduleUpdate()
      * Schedule next update.
      * argument delay number - Millis econds before next update. If empty, this.config.updateInterval is used.
@@ -259,7 +252,7 @@ module.exports = NodeHelper.create( {
         }, nextLoad );
         this.log(TRACE, "scheduleBusScheduleUpdate - end");
     },
-    
+
     updateJourneysTimetable: function () {
         this.log(TRACE, "updateJourneysTimetable - start");
         this.sendSocketNotification( "UPDATE_JOURNEYS", { lastUpdate: new Date( ) } );
@@ -290,8 +283,8 @@ module.exports = NodeHelper.create( {
         //}
         this.log(TRACE, "updateJourneysTimetable - end");
     },
-    
-    
+
+
     isTisseoDataFullyLoaded :  function() {
 		return (
 		(this.uniqueStops.length == this.neededTisseoStops.length)
@@ -299,7 +292,7 @@ module.exports = NodeHelper.create( {
 		(this.uniqueLines.length == this.neededTisseoLines.length)
 		);
 	},
-    
+
     /*
      *
      */
@@ -390,13 +383,13 @@ module.exports = NodeHelper.create( {
             self.log(DEBUG, "updateBusScheduleTimetable - this.config.retryDelay="+this.config.retryDelay);
             // update delay info
             self.processBusScheduleDataPending(this.config.retryDelay);
-            
+
             // reschedule
             self.scheduleBusScheduleUpdate( this.config.retryDelay );
         };
         this.log(TRACE, "updateBusScheduleTimetable - end");
     },
-    
+
     findBusLineId: function ( lineNumber) {
         this.log(TRACE, "findBusLineId - start");
         var returnData = {error: true, msg: 'not found'};
@@ -463,22 +456,22 @@ module.exports = NodeHelper.create( {
         this.busScheduleData.data = [];
         this.log(TRACE, "processBusScheduleData - end");
     },
-    
-    
+
+
     /* send bus schedule data to module DOM management*/
     processBusScheduleDataPending: function (updateInterval) {
         this.log(TRACE, "processBusScheduleDataPending - start");
         this.log(DEBUG, "processBusScheduleDataPending - sending the data to MM module. Data: ");
-        
+
         this.busScheduleData = {};
         this.busScheduleData.lastUpdate = new Date( );
         this.busScheduleData.loaded = false;
         this.busScheduleData.currentUpdateInterval = updateInterval
         this.log(DEBUG, "processBusScheduleDataPending - " + JSON.stringify(this.busScheduleData));
         this.sendSocketNotification( "BUS_SCHEDULES", this.busScheduleData );
-        
+
         // reset data
-        
+
         this.busScheduleData.lastUpdate = new Date( );
         this.busScheduleData.loaded = false;
         this.busScheduleData.data = [];
