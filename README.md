@@ -1,4 +1,6 @@
 # MMM-Toulouse-Transports
+[![Donate to this project using Patreon](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/bePatron?u=38268348)
+
 Attempt to make a Magic Mirror Module for Toulouse transportation system.
 I'm new to Git, MMM, Javascript/Node, so this also a Sandbox for me.
 
