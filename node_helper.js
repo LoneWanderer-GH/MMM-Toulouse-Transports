@@ -131,7 +131,7 @@ module.exports = NodeHelper.create( {
             var lineShortName = self.config.stopSchedules[index].lineNumber;
             self.log(DEBUG, "updateLineInfo - iteration:" + index +" get Line data for: " + lineShortName);
 
-            var urlGetLineId = 'https://api.tisseo.fr/v1/lines.json?network=Tiss%C3%A9o&shortName='+ lineShortName +'&key=' + apiKey;
+            var urlGetLineId = 'https://api.tisseo.fr/v2/lines.json?network=Tiss%C3%A9o&shortName='+ lineShortName +'&key=' + apiKey;
 
             unirest.get( urlGetLineId )
                 .headers( { 'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8' } )
@@ -172,7 +172,7 @@ module.exports = NodeHelper.create( {
         this.log(TRACE, "updateStopInfo - start - stopCode="+stopCode+" - lineId="+lineId);
         var self = this;
         var apiKey = self.config.apiKey;
-        var urlAllStop = 'https://api.tisseo.fr/v1/stop_points.json?lineId=' + lineId +'&key=' + apiKey;
+        var urlAllStop = 'https://api.tisseo.fr/v2/stop_points.json?lineId=' + lineId +'&key=' + apiKey;
         unirest.get( urlAllStop )
             .headers( {'Accept': 'text/html,application/xhtml+xml,application/xml;charset=utf-8'} )
             .end( function ( response ) {
