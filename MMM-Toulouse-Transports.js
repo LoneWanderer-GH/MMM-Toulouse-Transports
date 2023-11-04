@@ -32,7 +32,7 @@ Module.register( "MMM-Toulouse-Transports", {
         animationSpeed: 2000,
         convertToWaitingTime: true, // messages received from API can be 'hh:mm' in that case convert it in the waiting time 'x mn'
         initialLoadDelay: 0, // start delay seconds.
-        apiBaseSchedules: 'https://api.tisseo.fr/v1/stops_schedules.json?',
+        apiBaseSchedules: 'https://api.tisseo.fr/v2/stops_schedules.json?',
         maxLettersForDestination: 22, //will limit the length of the destination string
         concatenateArrivals: true, //if for a transport there is the same destination and several times, they will be displayed on one line
         showSecondsToNextUpdate: true, // display a countdown to the next update pull (should I wait for a refresh before going ?)
